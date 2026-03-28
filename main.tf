@@ -1,24 +1,28 @@
 provider "aws" {
- region="ap-south-1"
+ region="us-east-1"
 }
 
 resource "aws_instance" "web1" {
  instance_type="t3.micro"
- ami="ami-05d2d839d4f73aafb"
- key_name="myhyd.pem"
+ ami="ami-0ec10929233384c7f"
+ key_name="mypemkey"
  vpc_security_group_ids=[aws_security_group.sgw.id]
  subnet_id=aws_subnet.subnet1.id
- availability_zone="ap-south-1a"
+ availability_zone="us-east-1a"
 
   user_data = <<EOF
  #!/bin/bash
  sudo apt update -y
- sudo apt install apache2 -y
- systemctl enable apache2
- systemctl start apache2
- echo "Hi this is webserver-1">>/var/www/html/index.html
- EOF
+sudo apt install -y apache2
 
+cd /var/www/html/
+sudo rm -rf *
+
+echo "Hi this is webserver-1" | sudo tee /var/www/html/index.html
+
+sudo systemctl enable apache2
+sudo systemctl restart apache2
+EOF
 
  tags={
  Name="web-server-1"
@@ -27,19 +31,24 @@ resource "aws_instance" "web1" {
 
 resource "aws_instance" "web2"{
  instance_type="t3.micro"
- ami="ami-070e5bd3ff10324f8"
- key_name ="myhyd.pem"
+ ami="ami-0ec10929233384c7f"
+ key_name ="mypemkey"
  vpc_security_group_ids=[aws_security_group.sgw.id]
  subnet_id=aws_subnet.subnet2.id
- availability_zone="ap-south-1b"
+ availability_zone="us-east-1b"
 
  user_data = <<EOF
  #!/bin/bash
- sudo apt update -y
- sudo apt install apache2 -y
- systemctl enable apache2
- systemctl start apache2
- echo "Hi this is webserver-2">>/var/www/html/index.html
+sudo apt update -y
+sudo apt install -y apache2
+
+cd /var/www/html/
+sudo rm -rf *
+
+echo "Hi this is webserver-2" | sudo tee /var/www/html/index.html
+
+sudo systemctl enable apache2
+sudo systemctl restart apache2
  EOF
 
  tags={
@@ -49,8 +58,8 @@ resource "aws_instance" "web2"{
 
 resource "aws_instance" "app1"{
  instance_type="t3.micro"
- ami="ami-070e5bd3ff10324f8"
- key_name ="myhyd.pem"
+ ami="ami-0ec10929233384c7f"
+ key_name ="mypemkey"
  vpc_security_group_ids=[aws_security_group.sgw.id]
  subnet_id=aws_subnet.subnet1.id
  tags={
@@ -61,8 +70,8 @@ resource "aws_instance" "app1"{
 
 resource "aws_instance" "app2"{
  instance_type="t3.micro"
- ami="ami-070e5bd3ff10324f8"
- key_name ="myhyd.pem"
+ ami="ami-0ec10929233384c7f"
+ key_name ="mypemkey"
  vpc_security_group_ids=[aws_security_group.sgw.id]
  subnet_id=aws_subnet.subnet2.id
  tags={
@@ -70,3 +79,21 @@ resource "aws_instance" "app2"{
 }
 }
 
+resource "aws_iam_user" "seven" {
+for_each = var.user_names
+name = each.value
+}
+
+variable "user_names" {
+description = "*"
+type = set(string)
+default = ["milky1", "tillu1", "hari1", "Dharani1"]
+}
+
+resource "aws_ebs_volume" "eight" {
+ availability_zone = "us-east-1a"
+  size = 25
+  tags = {
+    Name = "ebs-001"
+  }
+}
