@@ -10,19 +10,20 @@ resource "aws_instance" "web1" {
  subnet_id=aws_subnet.subnet1.id
  availability_zone="us-east-1a"
 
-  user_data = <<EOF
- #!/bin/bash
- sudo apt update -y
-sudo apt install -y apache2
+user_data = <<EOF
+#!/bin/bash
+apt update -y
+apt install -y apache2
 
 cd /var/www/html/
-sudo rm -rf *
+rm -rf *
 
-echo "Hi this is webserver-1" | sudo tee /var/www/html/index.html
+echo "Hi this is webserver-1" > /var/www/html/index.html
 
-sudo systemctl enable apache2
-sudo systemctl restart apache2
+systemctl enable apache2
+systemctl restart apache2
 EOF
+
 
  tags={
  Name="web-server-1"
@@ -37,19 +38,19 @@ resource "aws_instance" "web2"{
  subnet_id=aws_subnet.subnet2.id
  availability_zone="us-east-1b"
 
- user_data = <<EOF
- #!/bin/bash
-sudo apt update -y
-sudo apt install -y apache2
+user_data = <<EOF
+#!/bin/bash
+apt update -y
+apt install -y apache2
 
 cd /var/www/html/
-sudo rm -rf *
+rm -rf *
 
-echo "Hi this is webserver-2" | sudo tee /var/www/html/index.html
+echo "Hi this is webserver-2" > /var/www/html/index.html
 
-sudo systemctl enable apache2
-sudo systemctl restart apache2
- EOF
+systemctl enable apache2
+systemctl restart apache2
+EOF
 
  tags={
  Name ="web-server-2"
