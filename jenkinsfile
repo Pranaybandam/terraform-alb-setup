@@ -1,0 +1,48 @@
+pipeline {
+    agent any
+    environment{
+        AWS_ACCESS_KEY_ID=credentials('accesskey')
+        AWS_SECRET_ACCESS_KEY=credentials('secretkey')
+    }
+
+    stages {
+        stage("git-clone") {
+            steps {
+                git branch: 'main', url: 'https://github.com/Pranaybandam/terraform-alb-setup.git'
+            }
+        }
+         stage("terraform cleaning"){
+            steps {
+                sh 'rm -rf .terraform'
+            }
+         }
+         stage("terraform cleaning1"){
+            steps {
+                sh 'rm -rf .terraform.lock.hcl'
+            }
+         }
+
+        stage("terraform initializing"){
+            steps {
+                sh 'terraform init -upgrade'
+            }
+        }
+         stage("validating terraform "){
+            steps {
+                sh 'terraform validate'
+            }
+         }
+        stage("terraform planing"){
+            steps {
+                sh 'terraform plan'
+            }
+    }
+     stage("infrasture setup using terraform "){
+            steps {
+                sh 'terraform $mychoice --auto-approve'
+
+
+}
+}
+}
+}
